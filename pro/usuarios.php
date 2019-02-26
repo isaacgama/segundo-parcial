@@ -88,7 +88,7 @@
               <tr>
                 <th>Nombre</th>
                 <th>Teléfono</th>
-                <th>Acciones</th>
+                <th>Accioness</th>
               </tr>
             </thead>
             <tbody></tbody>
