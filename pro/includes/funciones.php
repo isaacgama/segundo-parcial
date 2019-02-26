@@ -1,66 +1,77 @@
 <?php 
-function select($tabla){
-	global $conectar;
-	$consulta = "SELECT * FROM $tabla";
-	$resultado = mysqli_query($conectar, $consulta);
-	return($resultado);
+require_once("db.php");
+switch ($_POST["accion"]) {
+	case 'login':
+	login();
+	break;
+	case 'consultar_usuarios':
+	consultar_usuarios();
+	break;
+	case 'insertar_usuarios':
+	insertar_usuarios();
+	break;
+	default:
+	break;
 }
-function selectid($registro_basura){
-	global $conectar;
-	$consulta = "SELECT * FROM registro_basura";
-	$resultado = mysqli_query($conectar, $consulta);
-	return($resultado);
+function consultar_usuarios(){
+	global $mysqli;
+	$consulta = "SELECT * FROM usuarios";
+	$resultado = mysqli_query($mysqli, $consulta);
+	$arreglo = [];
+	while($fila = mysqli_fetch_array($resultado)){
+		array_push($arreglo, $fila);
+	}
+	echo json_encode($arreglo); //Imprime el JSON ENCODEADO
 }
-function selectWhere($tabla, $campo, $valor){
-	global $conectar;
-	$consulta = "SELECT * FROM $tabla WHERE $campo = $valor";
-	$resultado = mysqli_query($conectar, $consulta);
-	return($resultado);
+function insertar_usuarios(){
+	global $mysqli;
+	$nombre_usr = $_POST["nombre"];
+	$correo_usr = $_POST["correo"];	
+	$password = $_POST["password"];	
+	$telefono_usr = $_POST["telefono"];	
+	$consultain = "INSERT INTO usuarios VALUES('','$nombre_usr','$correo_usr','$password', '$telefono_usr', 1)";
+	$resultadoin = mysqli_query($mysqli, $consultain);
+	$arregloin = [];
+	while($filain = mysqli_fetch_array($resultadoin)){
+		array_push($arregloin, $filain);
+	}
+	echo json_encode($arregloin); //Imprime el JSON ENCODEADO
 }
-function insertUsuario($correo, $password){
-	global $conectar;
-	$consulta = "INSERT INTO login VALUES('','$correo','$password')";
-	mysqli_query($conectar, $consulta);
-}
-function insertRegistro($id_usuario, $fecha_multa, $saldo){
-	global $conectar;
-	$consulta = "INSERT INTO reporte VALUES('','$id_usuario','$fecha_multa','$saldo')";
-	mysqli_query($conectar, $consulta);
-}
-function updateUsuario($nombre, $correo, $telefono, $password,$nivel, $status, $id){
-	global $conectar;
-	$consulta = "UPDATE usuario SET nombre = '$nombre', 
-	correo= '$correo', telefono = '$telefono', nivel = $nivel, 	password = '$password', status = $status 	WHERE id = $id";
-	mysqli_query($conectar, $consulta);
-}
-function eliminar($tabla, $campo, $valor){
-	global $conectar;
-	$consulta = "DELETE FROM $tabla WHERE $campo = $valor";
-	mysqli_query($conectar, $consulta);
-}
-function validarusuario($tabla, $usuario, $password){
-	global $conectar;
-	$consultar = "SELECT * FROM $tabla WHERE correo = '$usuario' AND password = '$password'";
-	$resultado = mysqli_query($conectar, $consultar);
-	
-	$filas = mysqli_num_rows($resultado);
-	return($filas);
-}
-///NIVELES///
-function updateNiveles($nombre, $id){
-	global $conectar;
-	$consulta = "UPDATE nivel SET nombre = '$nombre' WHERE id = $id";
-	mysqli_query($conectar, $consulta);
-}
-function insertNivel($nombre){
-	global $conectar;
-	$consulta = "INSERT INTO nivel VALUES('','$nombre')";
-	mysqli_query($conectar, $consulta);
-}
+
+	function login(){
+		global $mysqli;
+		// Conectar a Base de Datos.
+		$correo = $_POST["correo"];
+		$pass = $_POST["password"];	
+		// Consultar a Base de Datos que exista el usuario.
+		$consulta = "SELECT * FROM usuarios WHERE correo_usr = '$correo'";
+		$resultado = $mysqli->query($consulta);
+		$fila = $resultado->fetch_assoc();
+		
+		if ($fila == 0) 
+			{
+				// 	Si el usuario no existe imprimir = 2
+				echo "El usuario no existe [ERROR-02]";
+
+			}
+
+			// 	Si el usuario existe, conusltar que el password sea correcto. 
+		else if ($fila["password"] != $pass) 
+			{
+				$consulta = "SELECT * FROM usuarios WHERE correo_usr = '$correo' AND password = '$pass'";
+				$resultado = $mysqli->query($consulta);
+				$fila = $resultado->fetch_assoc();
+				// 			Si el password no es correcto, imprimir codigo de erorres = 0.
+				echo "El Password es Incorrecto [ERROR-00]";
+
+				
+			}
+				else if($correo == $fila["correo_usr"] && $pass == $fila["password"])
+				{
+					// 			Si el password es correcto imprimir = 1 
+					echo "El Usuario y Password son Correctos [ACESSO-01]"	;
+					
+				}
+			}
+
 ?>
-
-
-
-
-
-
