@@ -11,65 +11,7 @@
   <link href="css/estilos.css" rel="stylesheet">
 </head>
 <body>
-  <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">ActiveBox</a>
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
-    <ul class="navbar-nav px-3">
-      <li class="nav-item text-nowrap">
-        <a class="nav-link" href="#">Sign out</a>
-      </li>
-    </ul>
-  </nav>
-
-  <div class="container-fluid">
-    <div class="row">
-      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-        <div class="sidebar-sticky">
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link active" href="#">
-                <span data-feather="home"></span>
-                Usuarios <span class="sr-only">(current)</span>
-              </a>
-            </li>
-             <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="file"></span>
-                Main
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="file"></span>
-                Features
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="shopping-cart"></span>
-                Works
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="users"></span>
-                OurTeam
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="bar-chart-2"></span>
-                Testimonials
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <span data-feather="layers"></span>
-                Downloads
-              </a>
-            </li>
-        </div>
-      </nav>
+ <?php require_once("includes/navbar.php");   ?>
 
       <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" id="main">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -88,7 +30,7 @@
               <tr>
                 <th>Nombre</th>
                 <th>Teléfono</th>
-                <th>Accioness</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -133,6 +75,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
   <script>
+    //muestra que vista (guardar o regirtrar) es visible
     function change_view(vista = 'show_data'){
       $("#main").find(".view").each(function(){
         // $(this).addClass("d-none");
@@ -146,10 +89,11 @@
 
     }
     function consultar(){
-      let obj = {
-        "accion" : "consultar_usuarios"
+         let obj = {
+        "accion" : "consultar_usuarios"  
       };
-      $.post("includes/funciones.php", obj, function(respuesta){
+      
+      $.post("includes/_funciones.php", obj, function(respuesta){
         let template = ``;
         $.each(respuesta,function(i,e){
           template += `
@@ -157,8 +101,8 @@
           <td>${e.nombre_usr}</td>
           <td>${e.telefono_usr}</td>
           <td>
-          <a href="#" data-id="${e.id_usr}">Editar</a>
-          <a href="#" data-id="${e.id_usr}">Eliminar</a>
+          <a href="#" data-id="${e.id_usr}" class="editar_registro">Editar</a>
+          <a href="#" data-id="${e.id_usr}" class="eliminar_registro">Eliminar</a>
           </td>
           </tr>
           `;
@@ -174,20 +118,18 @@
       change_view('insert_data');
     });
 
-    $("#guardar_datos").click(function(guardar){
-     // Funcion para guardar Datos
-      let nombre = $("#nombre").val();
-      let correo = $("#correo").val();
-      let telefono = $("#telefono").val();
-      let password = $("#password").val();
-      // Inicializar el objetos
+    $("#guardar_datos").click(function(){
+      let nombre = $('#nombre').val();
+      let correo = $('#correo').val();
+      let telefono = $('#telefono').val();
+      let password = $('#password').val();
       let obj ={
         "accion" : "insertar_usuarios",
         "nombre" : nombre,
         "correo" : correo,
-        "password" : password,
-        "telefono" : telefono
-      }
+        "telefono" : telefono,
+        "password" : password
+      };
       $("#form_data").find("input").each(function(){
         $(this).removeClass("has-error");
         if($(this).val() != ""){
@@ -197,20 +139,76 @@
           return false;
         }
       });
-      $.post("includes/funciones.php", obj, function(verificado){ 
-      if (verificado != "" ) {
-       alert("Usuario Registrado");
-        }
-      else {
-        alert("Usuario NO Registrado");
-      } 
-     }
-     );
+      if($(this).data("editar") == 1){
+        obj["accion"] = "editar_usuarios";
+        obj["id"] = $(this).data("id");
+        $(this).text("Guardar").data("editar",0);
+        $("#form_data")[0].reset();
+      }
+      $.post("includes/_funciones.php", obj, function(respuesta){
+          alert(respuesta);
+        if (respuesta == "Se inserto el usuario en la BD ") {
+          change_view();
+          consultar();
+         }
+        if (respuesta == "Se edito el usuario correctamente") {
+            change_view();
+            consultar();
+          }
+      });
+      });
+//eliminar usuarios
+    $("#main").on("click",".eliminar_registro" , function(e){
+      e.preventDefault();
+      let confirmacion= confirm("Desea eliminar este registro");
+      if (confirmacion) {
+        let id=$(this).data('id'),
+            obj ={
+              "accion":"eliminar_registro",
+              "id":id
+            };
+            $.post("includes/_funciones.php", obj, function(respuesta){
+              alert(respuesta);
+              consultar();
+            });
+
+
+      }
+      else{
+        alert("El registro no se ha eliminado");
+      }
+
     });
 
-    $("#main").find(".cancelar").click(function(){
+
+//editar registro
+$('#list-usuarios').on("click",".editar_registro", function(e){
+        e.preventDefault();
+        let id = $(this).data('id'),
+            obj = {
+              "accion" : "editar_registro",
+              "id" : id
+            };
+        $("#form_data")[0].reset();
+        change_view('insert_data');
+        $("#guardar_datos").text("Editar").data("editar",1).data("id",id);
+        $.post("includes/_funciones.php", obj, function(r){
+          $("#nombre").val(r.nombre_usr);
+          $("#correo").val(r.correo_usr);
+          $("#telefono").val(r.telefono_usr);
+          $("#password").val(r.password_usr);
+        }, "JSON");
+            
+      });
+
+
+        $("#main").find(".cancelar").click(function(){
       change_view();
       $("#form_data")[0].reset();
+      if ($("#guardar_datos").data("editar") == 1) {
+        $("#guardar_datos").text("Guardar").data("editar",0);
+              
+      }
     });
   </script>
 </body>

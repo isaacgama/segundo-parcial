@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -11,11 +12,11 @@
   <link href="css/estilos.css" rel="stylesheet">
 </head>
 <body>
-  <?php require_once("navbar.php");   ?>
+  <?php require_once("includes/navbar.php");   ?>
 
       <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" id="main">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Features</h1>
+          <h1 class="h2">Works</h1>
           <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
               <button type="button" class="btn btn-sm btn-outline-danger cancelar">Cancelar</button>
@@ -23,14 +24,14 @@
             </div>
           </div>
         </div>
-        <h2>Features</h2>
+        <h2>Works</h2>
         <div class="table-responsive view" id="show_data">
-          <table class="table table-striped table-sm" id="list-features">
+          <table class="table table-striped table-sm" id="list-works">
             <thead>
               <tr>
                 <th>Ruta Imagen</th>
-                <th>Titulo</th>
-                <th>Subtitulo</th>
+                <th>Proyecto Nombre</th>
+                <th>Diseño del Website</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -43,17 +44,17 @@
               <div class="col">
                 <div class="form-group">
                   <label for="imagen">Ruta Imagen</label>
-                  <input type="file" id="imagen" name="imagen" class="form-control">
+                  <input type="text" id="imagen" name="imagen" class="form-control">
                 </div>
                 <div class="form-group">
-                  <label for="titulo">Titulo</label>
-                  <input type="text" id="titulo" name="titulo" class="form-control">
+                  <label for="proyecto">Proyecto</label>
+                  <input type="text" id="proyecto" name="proyecto" class="form-control">
                 </div>
               </div>
               <div class="col">
                 <div class="form-group">
-                  <label for="subtitulo">Subtitulo</label>
-                  <input type="text" id="subtitulo" name="subtitulo" class="form-control">
+                  <label for="website">Website</label>
+                  <input type="text" id="website" name="website" class="form-control">
                 </div>
               </div>
             </div>
@@ -86,24 +87,24 @@
     }
     function consultar(){
       let obj = {
-        "accion" : "consultar_features"
+        "accion" : "consultar_works"
       };
       $.post("includes/_funciones.php", obj, function(respuesta){
         let template = ``;
         $.each(respuesta,function(i,e){
           template += `
           <tr>
-          <td>${e.img_fe}</td>
-          <td>${e.titulo_fe}</td>
-          <td>${e.subtitulo_fe}</td>
+          <td>${e.imgW}</td>
+          <td>${e.prNameW}</td>
+          <td>${e.WebW}</td>
           <td>
-          <a href="#" data-id="${e.id_fe}">Editar</a>
-          <a href="#" data-id="${e.id_fe}">Eliminar</a>
+          <a href="#" data-id="${e.idW}">Editar</a>
+          <a href="#" data-id="${e.idW}">Eliminar</a>
           </td>
           </tr>
           `;
         });
-        $("#list-features tbody").html(template);
+        $("#list-works tbody").html(template);
       },"JSON");
     }
     $(document).ready(function(){
@@ -117,14 +118,14 @@
     $("#guardar_datos").click(function(guardar){
      // Funcion para guardar Datos
       let imagen = $("#imagen").val();
-      let titulo = $("#titulo").val();
-      let subtitulo = $("#subtitulo").val();
+      let proyecto = $("#proyecto").val();
+      let website = $("#website").val();
       // Inicializar el objetos
       let obj ={
-        "accion" : "insertar_features",
+        "accion" : "insertar_works",
         "imagen" : imagen,
-        "titulo" : titulo,
-        "subtitulo" : subtitulo
+        "proyecto" : proyecto,
+        "website" : website
       }
       $("#form_data").find("input").each(function(){
         $(this).removeClass("has-error");
@@ -137,10 +138,10 @@
       });
       $.post("includes/_funciones.php", obj, function(verificado){ 
       if (verificado != "" ) {
-       alert("Feature Registrado");
+       alert("Work Registrado");
         }
       else {
-        alert("Feature NO Registrado");
+        alert("Work NO Registrado");
       } 
      }
      );

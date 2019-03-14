@@ -11,11 +11,11 @@
   <link href="css/estilos.css" rel="stylesheet">
 </head>
 <body>
-  <?php require_once("navbar.php");   ?>
+ <?php require_once("includes/navbar.php");   ?>
 
       <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" id="main">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Encabezado</h1>
+          <h1 class="h2">Downloads</h1>
           <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
               <button type="button" class="btn btn-sm btn-outline-danger cancelar">Cancelar</button>
@@ -23,14 +23,14 @@
             </div>
           </div>
         </div>
-        <h2>Encabezado</h2>
+        <h2>Downloads</h2>
         <div class="table-responsive view" id="show_data">
-          <table class="table table-striped table-sm" id="list-encabezado">
+          <table class="table table-striped table-sm" id="list-download">
             <thead>
               <tr>
                 <th>Titulo</th>
                 <th>Subtitulo</th>
-                <th>Boton</th>
+                <th>Botón</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -42,7 +42,7 @@
             <div class="row">
               <div class="col">
                 <div class="form-group">
-                  <label for="titulo">Titulo</label>
+                  <label for="nombre">Titulo</label>
                   <input type="text" id="titulo" name="titulo" class="form-control">
                 </div>
                 <div class="form-group">
@@ -52,7 +52,7 @@
               </div>
               <div class="col">
                 <div class="form-group">
-                  <label for="boton">Boton</label>
+                  <label for="boton">Botón</label>
                   <input type="text" id="boton" name="boton" class="form-control">
                 </div>
               </div>
@@ -86,24 +86,24 @@
     }
     function consultar(){
       let obj = {
-        "accion" : "consultar_encabezado"
+        "accion" : "consultar_download"
       };
-      $.post("funciones.php", obj, function(respuesta){
+      $.post("includes/_funciones.php", obj, function(respuesta){
         let template = ``;
         $.each(respuesta,function(i,e){
           template += `
           <tr>
-          <td>${e.titulo_en}</td>
-          <td>${e.subtitulo_en}</td>
-          <td>${e.boton_en}</td>
+          <td>${e.titulo_do}</td>
+          <td>${e.subtitulo_do}</td>
+          <td>${e.boton_do}</td>
           <td>
-          <a href="#" data-id="${e.id_en}">Editar</a>
-          <a href="#" data-id="${e.id_en}">Eliminar</a>
+          <a href="#" data-id="${e.id_do}">Editar</a>
+          <a href="#" data-id="${e.id_do}">Eliminar</a>
           </td>
           </tr>
           `;
         });
-        $("#list-encabezado tbody").html(template);
+        $("#list-download tbody").html(template);
       },"JSON");
     }
     $(document).ready(function(){
@@ -115,31 +115,32 @@
     });
 
     $("#guardar_datos").click(function(guardar){
-
+     // Funcion para guardar Datos
       let titulo = $("#titulo").val();
       let subtitulo = $("#subtitulo").val();
       let boton = $("#boton").val();
+      // Inicializar el objetos
       let obj ={
-        "accion" : "insertar_encabezado",
+        "accion" : "insertar_download",
         "titulo" : titulo,
         "subtitulo" : subtitulo,
         "boton" : boton
       }
       $("#form_data").find("input").each(function(){
         $(this).removeClass("has-error");
-        if($(this).val() != ""){
+        if($(this).val() != ""){  
           obj[$(this).prop("name")] =  $(this).val();
         }else{
           $(this).addClass("has-error").focus();
           return false;
         }
       });
-      $.post("funciones.php", obj, function(verificado){ 
+      $.post("includes/_funciones.php", obj, function(verificado){ 
       if (verificado != "" ) {
-       alert("Encabezado Registrado");
+       alert("Referencias de Descarga Registrado");
         }
       else {
-        alert("Encabezado NO Registrado");
+        alert("Referencias de Descarga NO Registrado");
       } 
      }
      );
